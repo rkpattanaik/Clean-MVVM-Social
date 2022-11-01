@@ -5,18 +5,20 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.suspendCancellableCoroutine
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.CallAdapter
-import retrofit2.HttpException
+import retrofit2.Converter
 import java.lang.reflect.Type
 
 class FlowResultCallAdapter<T>(
     private val responseType: Type,
+    private val errorConverter: Converter<ResponseBody, out APIError>,
     private val dispatcher: CoroutineDispatcher
 ): CallAdapter<T, Flow<Result<T>>> {
     override fun responseType(): Type = responseType
 
-    override fun adapt(call: Call<T>): Flow<Result<T>> = flow<Result<T>> {
+    override fun adapt(call: Call<T>): Flow<Result<T>> = flow {
         emit(
             suspendCancellableCoroutine { continuation ->
                 call.run {
@@ -25,8 +27,7 @@ class FlowResultCallAdapter<T>(
                     onCallback(
                         { response ->
                             continuation.resumeWith(runCatching {
-                                if (response.isSuccessful) Result.success(response.body()!!)
-                                else Result.failure(HttpException(response))
+                                response.asResult(errorConverter)
                             })
                         },
                         { continuation.resumeWith(Result.failure(it)) }

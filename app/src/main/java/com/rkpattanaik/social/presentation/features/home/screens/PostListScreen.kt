@@ -58,9 +58,13 @@ fun PostListScreen(
                         item {
                             Spacer(modifier = Modifier.size(2.dp))
                         }
-                        items(state.posts) { item: PostEntity ->
-                            PostListItem(item)
+
+                        state.data?.let {
+                            items(it) { item: PostEntity ->
+                                PostListItem(item)
+                            }
                         }
+
                         item {
                             Spacer(modifier = Modifier.size(2.dp))
                         }

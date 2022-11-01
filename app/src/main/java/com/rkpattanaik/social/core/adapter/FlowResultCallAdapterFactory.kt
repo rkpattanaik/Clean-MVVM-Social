@@ -8,7 +8,8 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 class FlowResultCallAdapterFactory private constructor(
-    private val dispatcher: CoroutineDispatcher
+    private val dispatcher: CoroutineDispatcher,
+    private val errorClass: Class<out APIError>
 ): CallAdapter.Factory() {
     override fun get(
         returnType: Type,
@@ -33,8 +34,11 @@ class FlowResultCallAdapterFactory private constructor(
             )
         }
 
+        val errorBodyConverter = retrofit.responseBodyConverter<APIError>(errorClass, annotations)
+
         return FlowResultCallAdapter<Any>(
             responseType = getParameterUpperBound(0, responseType),
+            errorConverter = errorBodyConverter,
             dispatcher = dispatcher
         )
     }
@@ -42,7 +46,10 @@ class FlowResultCallAdapterFactory private constructor(
     companion object {
         @JvmStatic
         fun create(
-            dispatcher: CoroutineDispatcher = FlowCallAdapterSettings.dispatcher
-        ): FlowResultCallAdapterFactory = FlowResultCallAdapterFactory(dispatcher)
+            dispatcher: CoroutineDispatcher = FlowCallAdapterSettings.dispatcher,
+            apiErrorClass: Class<out APIError>
+        ): FlowResultCallAdapterFactory {
+            return FlowResultCallAdapterFactory(dispatcher, apiErrorClass)
+        }
     }
 }

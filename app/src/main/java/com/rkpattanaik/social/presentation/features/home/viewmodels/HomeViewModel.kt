@@ -9,6 +9,7 @@ import com.rkpattanaik.social.domain.entity.PostEntity
 import com.rkpattanaik.social.domain.entity.UserEntity
 import com.rkpattanaik.social.domain.usecase.post.GetAllPostsUseCase
 import com.rkpattanaik.social.domain.usecase.user.GetAllUsersUseCase
+import com.rkpattanaik.social.presentation.ui.common.UIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -19,47 +20,35 @@ class HomeViewModel @Inject constructor(
     private val getAllPostsUseCase: GetAllPostsUseCase,
     private val getAllUsersUseCase: GetAllUsersUseCase
 ): ViewModel() {
-    private val _postListState = mutableStateOf(PostListState())
-    private val _userListState = mutableStateOf(UserListState())
-    val postListState: State<PostListState> = _postListState
-    val userListState: State<UserListState> = _userListState
+    private val _postListState = mutableStateOf(UIState<List<PostEntity>>())
+    private val _userListState = mutableStateOf(UIState<List<UserEntity>>())
+    val postListState: State<UIState<List<PostEntity>>> = _postListState
+    val userListState: State<UIState<List<UserEntity>>> = _userListState
 
     init {
         getPosts()
     }
 
-    private fun getPosts() {
-        _postListState.value = PostListState(isLoading = true)
-
-        getAllPostsUseCase(UseCase.NoParams()).onEach {
-            it.onSuccess { posts ->
-                _postListState.value = PostListState(posts = posts)
+    private fun getUsers() {
+        _userListState.value = UIState(isLoading = true)
+        getAllUsersUseCase(UseCase.NoParams()).onEach { result ->
+            result.onSuccess { users ->
+                _userListState.value = UIState(data = users)
             }.onFailure { err ->
-                _postListState.value = PostListState(error = err.localizedMessage ?: "Something went wrong")
+                _userListState.value = UIState(error = err.localizedMessage ?: "Something went wrong")
             }
         }.launchIn(viewModelScope)
     }
 
-    private fun getUsers() {
-        _userListState.value = UserListState(isLoading = true)
-        getAllUsersUseCase(UseCase.NoParams()).onEach {
-            it.onSuccess { users ->
-                _userListState.value = UserListState(users = users)
+    private fun getPosts() {
+        _postListState.value = UIState(isLoading = true)
+
+        getAllPostsUseCase(UseCase.NoParams()).onEach { result ->
+            result.onSuccess { posts ->
+                _postListState.value = UIState(data = posts)
             }.onFailure { err ->
-                _userListState.value = UserListState(error = err.localizedMessage ?: "Something went wrong")
+                _postListState.value = UIState(error = err.localizedMessage ?: "Something went wrong")
             }
         }.launchIn(viewModelScope)
     }
 }
-
-data class PostListState(
-    val isLoading: Boolean = false,
-    val posts: List<PostEntity> = emptyList(),
-    val error: String = ""
-)
-
-data class UserListState(
-    val isLoading: Boolean = false,
-    val users: List<UserEntity> = emptyList(),
-    val error: String = ""
-)

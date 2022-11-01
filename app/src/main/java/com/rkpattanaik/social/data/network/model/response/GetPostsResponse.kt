@@ -1,4 +1,4 @@
-package com.rkpattanaik.social.data.network.model
+package com.rkpattanaik.social.data.network.model.response
 
 
 import com.google.gson.annotations.SerializedName

@@ -45,8 +45,10 @@ fun UserListScreen(
                     .padding(12.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(state.users) { item: UserEntity ->
-                    UserListItem(item)
+                state.data?.let {
+                    items(it) { item: UserEntity ->
+                        UserListItem(item)
+                    }
                 }
             }
         }

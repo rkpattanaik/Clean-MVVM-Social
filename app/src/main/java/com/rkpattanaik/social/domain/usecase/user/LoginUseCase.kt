@@ -4,8 +4,9 @@ import com.google.gson.annotations.SerializedName
 import com.rkpattanaik.social.domain.repository.UserRepository
 import com.rkpattanaik.social.core.UseCase
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class LoginUseCase(
+class LoginUseCase @Inject constructor(
     private val repository: UserRepository
 ): UseCase<LoginParams, Boolean> {
     override fun invoke(params: LoginParams): Flow<Result<Boolean>> {

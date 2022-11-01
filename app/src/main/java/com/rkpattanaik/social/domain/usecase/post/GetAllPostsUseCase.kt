@@ -12,5 +12,4 @@ class GetAllPostsUseCase @Inject constructor(
     override fun invoke(params: UseCase.NoParams): Flow<Result<List<PostEntity>>> {
         return repository.getAllPosts()
     }
-
 }

@@ -1,6 +1,6 @@
-package com.rkpattanaik.social.data.network
+package com.rkpattanaik.social.data.network.service
 
-import com.rkpattanaik.social.data.network.model.GetPostsResponse
+import com.rkpattanaik.social.data.network.model.response.GetPostsResponse
 import kotlinx.coroutines.flow.Flow
 import retrofit2.http.GET
 

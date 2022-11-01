@@ -1,8 +1,10 @@
 package com.rkpattanaik.social.di
 
 import com.rkpattanaik.social.core.adapter.FlowResultCallAdapterFactory
-import com.rkpattanaik.social.data.network.DummyJsonApi
-import com.rkpattanaik.social.data.network.ReqResApi
+import com.rkpattanaik.social.data.network.service.DummyJsonApi
+import com.rkpattanaik.social.data.network.service.ReqResApi
+import com.rkpattanaik.social.data.network.model.error.DummyJsonApiError
+import com.rkpattanaik.social.data.network.model.error.ReqResApiError
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,12 +36,12 @@ object NetworkModule {
     fun provideRetrofitBuilder(okHttpClient: OkHttpClient): Builder = Builder()
         .client(okHttpClient)
         .addConverterFactory(GsonConverterFactory.create())
-        .addCallAdapterFactory(FlowResultCallAdapterFactory.create())
 
     @Singleton
     @Provides
     fun provideDummyJsonApi(retrofitBuilder: Builder): DummyJsonApi = retrofitBuilder
         .baseUrl("https://dummyjson.com/")
+        .addCallAdapterFactory(FlowResultCallAdapterFactory.create(apiErrorClass = DummyJsonApiError::class.java))
         .build()
         .create(DummyJsonApi::class.java)
 
@@ -47,6 +49,7 @@ object NetworkModule {
     @Provides
     fun provideReqResApi(retrofitBuilder: Builder): ReqResApi = retrofitBuilder
         .baseUrl("https://reqres.in/api/")
+        .addCallAdapterFactory(FlowResultCallAdapterFactory.create(apiErrorClass = ReqResApiError::class.java))
         .build()
         .create(ReqResApi::class.java)
 }

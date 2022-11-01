@@ -28,7 +28,9 @@ fun PostListItem(item: PostEntity) {
                 text = item.title,
                 style = MaterialTheme.typography.h6
             )
+
             Spacer(modifier = Modifier.size(4.dp))
+
             Text(
                 text = item.body,
                 style = MaterialTheme.typography.body1
@@ -41,6 +43,9 @@ fun PostListItem(item: PostEntity) {
 @Composable
 fun PostListItemPreview() {
     SocialTheme {
-        PostListItem(PostEntity())
+        PostListItem(PostEntity(
+            title = "Post Title",
+            body = "Post Body"
+        ))
     }
 }

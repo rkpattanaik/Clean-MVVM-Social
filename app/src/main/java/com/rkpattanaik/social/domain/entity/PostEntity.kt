@@ -1,6 +1,5 @@
 package com.rkpattanaik.social.domain.entity
 
-
 import com.google.gson.annotations.SerializedName
 
 data class PostEntity(

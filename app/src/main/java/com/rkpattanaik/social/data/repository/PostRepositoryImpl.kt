@@ -1,6 +1,6 @@
 package com.rkpattanaik.social.data.repository
 
-import com.rkpattanaik.social.data.network.DummyJsonApi
+import com.rkpattanaik.social.data.network.service.DummyJsonApi
 import com.rkpattanaik.social.domain.entity.PostEntity
 import com.rkpattanaik.social.domain.repository.PostRepository
 import com.rkpattanaik.social.domain.usecase.post.CreatePostParams
@@ -15,14 +15,6 @@ class PostRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override fun deletePost(id: Int): Flow<Result<Boolean>> {
-        TODO("Not yet implemented")
-    }
-
     override fun getAllPosts(): Flow<Result<List<PostEntity>>> = dummyJsonApi.getPosts()
         .map { result -> result.map { it.posts } }
-
-    override fun getPost(id: Int): Flow<Result<PostEntity>> {
-        TODO("Not yet implemented")
-    }
 }
