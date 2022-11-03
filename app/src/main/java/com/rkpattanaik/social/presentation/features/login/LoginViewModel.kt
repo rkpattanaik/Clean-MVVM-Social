@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rkpattanaik.social.data.network.model.response.LoginError
 import com.rkpattanaik.social.domain.usecase.user.LoginParams
 import com.rkpattanaik.social.domain.usecase.user.LoginUseCase
 import com.rkpattanaik.social.presentation.ui.common.UIState
@@ -34,7 +35,13 @@ class LoginViewModel @Inject constructor(
                 }
                 else _loginState.value = UIState(error = "Login Failed")
             }.onFailure { err ->
-                val message = err.localizedMessage ?: "Something wrong"
+                val message = if (err is LoginError) {
+                    println("Login Error Code: ${err.code}")
+                    println("Raw Login Error: ${err.rawError}")
+                    err.error
+                } else {
+                    err.message ?: "Something went wrong!"
+                }
                 println("Login Error: $message")
                 _loginState.value = UIState(error = message)
             }

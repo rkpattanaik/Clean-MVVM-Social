@@ -1,6 +1,6 @@
 package com.rkpattanaik.social.di
 
-import com.rkpattanaik.social.core.adapter.FlowResultCallAdapterFactory
+import com.rkpattanaik.social.core.retrofit.factory.FlowResultCallAdapterFactory
 import com.rkpattanaik.social.data.network.service.DummyJsonApi
 import com.rkpattanaik.social.data.network.service.ReqResApi
 import com.rkpattanaik.social.data.network.model.error.DummyJsonApiError
@@ -41,7 +41,11 @@ object NetworkModule {
     @Provides
     fun provideDummyJsonApi(retrofitBuilder: Builder): DummyJsonApi = retrofitBuilder
         .baseUrl("https://dummyjson.com/")
-        .addCallAdapterFactory(FlowResultCallAdapterFactory.create(apiErrorClass = DummyJsonApiError::class.java))
+        .addCallAdapterFactory(
+            FlowResultCallAdapterFactory.create(
+            defaultApiErrorClass = DummyJsonApiError::class,
+            isAsyncByDefault = true
+        ))
         .build()
         .create(DummyJsonApi::class.java)
 
@@ -49,7 +53,11 @@ object NetworkModule {
     @Provides
     fun provideReqResApi(retrofitBuilder: Builder): ReqResApi = retrofitBuilder
         .baseUrl("https://reqres.in/api/")
-        .addCallAdapterFactory(FlowResultCallAdapterFactory.create(apiErrorClass = ReqResApiError::class.java))
+        .addCallAdapterFactory(
+            FlowResultCallAdapterFactory.create(
+            defaultApiErrorClass = ReqResApiError::class,
+            isAsyncByDefault = true
+        ))
         .build()
         .create(ReqResApi::class.java)
 }
