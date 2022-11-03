@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rkpattanaik.social.core.UseCase
+import com.rkpattanaik.social.data.network.model.error.DummyJsonApiError
 import com.rkpattanaik.social.domain.entity.PostEntity
 import com.rkpattanaik.social.domain.entity.UserEntity
 import com.rkpattanaik.social.domain.usecase.post.GetAllPostsUseCase
@@ -35,7 +36,7 @@ class HomeViewModel @Inject constructor(
             result.onSuccess { users ->
                 _userListState.value = UIState(data = users)
             }.onFailure { err ->
-                _userListState.value = UIState(error = err.localizedMessage ?: "Something went wrong")
+                _userListState.value = UIState(error = err.message ?: "Something went wrong")
             }
         }.launchIn(viewModelScope)
     }
@@ -47,7 +48,13 @@ class HomeViewModel @Inject constructor(
             result.onSuccess { posts ->
                 _postListState.value = UIState(data = posts)
             }.onFailure { err ->
-                _postListState.value = UIState(error = err.localizedMessage ?: "Something went wrong")
+                val message = if (err is DummyJsonApiError) {
+                    println(err.rawError)
+                    err.message
+                } else {
+                    err.message
+                }
+                _postListState.value = UIState(error = message ?: "Something went wrong")
             }
         }.launchIn(viewModelScope)
     }
