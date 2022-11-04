@@ -4,7 +4,7 @@ import app.cash.turbine.test
 import com.rkpattanaik.social.domain.repository.UserRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Before
@@ -26,7 +26,7 @@ class LoginUseCaseTest {
     @Test
     fun testLoginSuccess() = runTest {
         whenever(repository.login(any())).thenReturn(
-            flow { emit(Result.success(true)) }
+            flowOf(Result.success(true))
         )
 
         val resultFlow = loginUseCase.invoke(LoginParams("", ""))
@@ -43,7 +43,7 @@ class LoginUseCaseTest {
     @Test
     fun testLoginSuccessWithTurbine() = runTest {
         whenever(repository.login(any())).thenReturn(
-            flow { emit(Result.success(true)) }
+            flowOf(Result.success(true))
         )
 
         val resultFlow = loginUseCase.invoke(LoginParams("", ""))
@@ -61,7 +61,7 @@ class LoginUseCaseTest {
     @Test
     fun testLoginErrorWithTurbine() = runTest {
         whenever(repository.login(any())).thenReturn(
-            flow { emit(Result.failure(Throwable("Fail"))) }
+            flowOf(Result.failure(Throwable("Fail")))
         )
 
         val resultFlow = loginUseCase.invoke(LoginParams("", ""))

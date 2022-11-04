@@ -7,6 +7,7 @@ import com.rkpattanaik.social.util.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Before
@@ -45,9 +46,9 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun testLoginSuccess() {
+    fun testLoginSuccess() = runTest {
         whenever(repository.login(any())).thenReturn(
-            flow { emit(Result.success(true)) }
+            flowOf(Result.success(true))
         )
 
         val callback: () -> Unit = mock()
@@ -59,9 +60,9 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun testLoginFailureWithLoginErrorResponse() {
+    fun testLoginFailureWithLoginErrorResponse() = runTest {
         whenever(repository.login(any())).thenReturn(
-            flow { emit(Result.failure(LoginError(error = "Fail"))) }
+            flowOf(Result.failure(LoginError(error = "Fail")))
         )
 
         val callback: () -> Unit = mock()
@@ -75,9 +76,9 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun testLoginFailureWithThrowable() {
+    fun testLoginFailureWithThrowable() = runTest {
         whenever(repository.login(any())).thenReturn(
-            flow { emit(Result.failure(Throwable("Fail"))) }
+            flowOf(Result.failure(Throwable("Fail")))
         )
 
         val callback: () -> Unit = mock()

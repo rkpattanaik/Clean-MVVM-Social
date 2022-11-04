@@ -1,31 +1,34 @@
-package com.rkpattanaik.social.presentation.features.home.screens
+package com.rkpattanaik.social.presentation.features.home.components
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.rkpattanaik.social.domain.entity.UserEntity
-import com.rkpattanaik.social.presentation.features.home.components.UserListItem
-import com.rkpattanaik.social.presentation.features.home.viewmodels.HomeViewModel
+import com.rkpattanaik.social.presentation.ui.common.UIState
 
 @Composable
-fun UserListScreen(
-    viewModel: HomeViewModel = hiltViewModel()
+fun UsersSection(
+    state: UIState<List<UserEntity>>
 ) {
-    val state = viewModel.userListState.value
-    Box(
-        modifier = Modifier.fillMaxSize()
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(top = 12.dp)
     ) {
+        Text(
+            text = "Users",
+            style = MaterialTheme.typography.h5
+        )
+
+        Spacer(modifier = Modifier.size(8.dp))
+
         if(state.isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            CircularProgressIndicator()
         } else {
             if(state.error.isNotBlank()) {
                 Text(
@@ -35,15 +38,11 @@ fun UserListScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp)
-                        .align(Alignment.Center)
                 )
             }
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 state.data?.let {
                     items(it) { item: UserEntity ->

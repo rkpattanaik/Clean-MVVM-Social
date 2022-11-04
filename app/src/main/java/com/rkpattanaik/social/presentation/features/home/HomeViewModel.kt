@@ -1,4 +1,4 @@
-package com.rkpattanaik.social.presentation.features.home.viewmodels
+package com.rkpattanaik.social.presentation.features.home
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +27,7 @@ class HomeViewModel @Inject constructor(
     val userListState: State<UIState<List<UserEntity>>> = _userListState
 
     init {
+        getUsers()
         getPosts()
     }
 
