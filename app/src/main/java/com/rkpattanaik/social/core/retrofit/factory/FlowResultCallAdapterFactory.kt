@@ -1,9 +1,9 @@
 package com.rkpattanaik.social.core.retrofit.factory
 
-import com.rkpattanaik.social.core.retrofit.error.APIError
 import com.rkpattanaik.social.core.retrofit.adapter.FlowResultCallAdapter
 import com.rkpattanaik.social.core.retrofit.annotation.Async
 import com.rkpattanaik.social.core.retrofit.annotation.ErrorResponse
+import com.rkpattanaik.social.core.retrofit.error.APIError
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import retrofit2.CallAdapter
@@ -14,22 +14,27 @@ import kotlin.reflect.KClass
 
 class FlowResultCallAdapterFactory private constructor(
     private val dispatcher: CoroutineDispatcher,
-    private var errorClass: KClass<out APIError>,
-    private var isAsync: Boolean
+    private val defaultErrorClass: KClass<out APIError>,
+    private val isAsyncByDefault: Boolean
 ): CallAdapter.Factory() {
     override fun get(
         returnType: Type,
         annotations: Array<out Annotation>,
         retrofit: Retrofit
     ): CallAdapter<*, *>? {
+        var isAsync = isAsyncByDefault
+        var errorClass = defaultErrorClass
+
         if (getRawType(returnType) != Flow::class.java) return null
 
         val responseType = getParameterUpperBound(0, returnType as ParameterizedType)
         if (getRawType(responseType) != Result::class.java) return null
 
         annotations.forEach {
-            if (it is Async) isAsync = it.value
-            if (it is ErrorResponse) errorClass = it.value
+            when(it) {
+                is Async -> isAsync = it.value
+                is ErrorResponse -> errorClass = it.value
+            }
         }
 
         val errorBodyConverter = retrofit.responseBodyConverter<APIError>(errorClass.java, annotations)

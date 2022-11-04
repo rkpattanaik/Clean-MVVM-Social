@@ -34,6 +34,7 @@ class HomeViewModel @Inject constructor(
     private fun getUsers() {
         _userListState.value = UIState(isLoading = true)
         getAllUsersUseCase(UseCase.NoParams()).onEach { result ->
+            println("Thread[Users Flow Collect] ${Thread.currentThread().name}")
             result.onSuccess { users ->
                 _userListState.value = UIState(data = users)
             }.onFailure { err ->
@@ -46,6 +47,7 @@ class HomeViewModel @Inject constructor(
         _postListState.value = UIState(isLoading = true)
 
         getAllPostsUseCase(UseCase.NoParams()).onEach { result ->
+            println("Thread[Posts Flow Collect] ${Thread.currentThread().name}")
             result.onSuccess { posts ->
                 _postListState.value = UIState(data = posts)
             }.onFailure { err ->

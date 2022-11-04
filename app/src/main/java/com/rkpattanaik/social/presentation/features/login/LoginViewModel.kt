@@ -28,6 +28,7 @@ class LoginViewModel @Inject constructor(
         _loginState.value = UIState(isLoading = true)
 
         loginUseCase(LoginParams(email, password)).onEach { result ->
+            println("Thread[Login Flow Collect] ${Thread.currentThread().name}")
             result.onSuccess { isSuccess ->
                 if (isSuccess) {
                     _loginState.value = UIState(data = true)

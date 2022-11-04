@@ -4,11 +4,11 @@ import com.rkpattanaik.social.core.retrofit.error.APIError
 import com.rkpattanaik.social.core.retrofit.extension.asResult
 import com.rkpattanaik.social.core.retrofit.extension.executeAsync
 import com.rkpattanaik.social.core.retrofit.extension.onCancellation
+import com.rkpattanaik.social.core.retrofit.factory.FlowAdapterFactorySettings
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -27,17 +27,21 @@ class FlowResultCallAdapter<T>(
     override fun adapt(call: Call<T>): Flow<Result<T>> = if (isAsync) {
         flowAsync(call)
     } else {
-        runBlocking(dispatcher) { flowSync(call) }
+        flowSync(call)
     }
 
     private fun flowAsync(call: Call<T>): Flow<Result<T>> = flow {
         emit(
             suspendCancellableCoroutine { continuation ->
+                val endpoint = call.request().url.encodedPath
+                println("Thread[Async:FlowStart:$endpoint] ${Thread.currentThread().name}")
+                call.request().url.encodedPath
                 call.run {
                     onCancellation(continuation)
 
                     executeAsync(
                         { response ->
+                            println("Thread[Async:OnResponse:$endpoint] ${Thread.currentThread().name}")
                             continuation.resumeWith(runCatching {
                                 response.asResult(errorConverter)
                             })
@@ -52,10 +56,12 @@ class FlowResultCallAdapter<T>(
     private fun flowSync(call: Call<T>): Flow<Result<T>> = flow {
         emit(
             try {
+                val endpoint = call.request().url.encodedPath
+                println("Thread[Sync:FlowStart:$endpoint] ${Thread.currentThread().name}")
                 call.execute().asResult(errorConverter)
             } catch (e: Exception) {
                 Result.failure(e)
             }
         )
-    }.flowOn(dispatcher)
+    }.flowOn(FlowAdapterFactorySettings.syncDispatcher)
 }
