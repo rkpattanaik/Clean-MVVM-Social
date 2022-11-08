@@ -1,4 +1,4 @@
-package com.rkpattanaik.social.presentation.features.home.screens
+package com.rkpattanaik.social.presentation.features.home
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.rkpattanaik.social.presentation.features.home.HomeViewModel
 import com.rkpattanaik.social.presentation.features.home.components.PostsSection
 import com.rkpattanaik.social.presentation.features.home.components.UsersSection
 import com.rkpattanaik.social.presentation.ui.common.SocialAppBar
