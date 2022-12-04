@@ -6,5 +6,5 @@ import com.rkpattanaik.social.core.retrofit.error.APIError
 
 data class DummyJsonApiError(
     @SerializedName("message")
-    override val message: String? = null
+    override var message: String? = null
 ): APIError()
