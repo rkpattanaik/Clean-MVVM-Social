@@ -25,6 +25,7 @@ internal fun <T> Call<T>.executeAsync(
         }
 
         override fun onFailure(call: Call<T>, t: Throwable) {
+            println("FlowAdapter : OnFailure : ${t.message}")
             failure(t)
         }
     })
@@ -41,7 +42,7 @@ fun <T> Response<T>.asResult(
 ): Result<T> {
     return if (isSuccessful) {
         if (body() != null) Result.success(body()!!)
-        else Result.failure(Throwable("${code()}: Empty Error Body"))
+        else Result.failure(Throwable("${code()}: Empty Response Body"))
     } else {
         val errorBody = errorBody()
         val errorString = errorBody?.stringDuplicate()
@@ -52,16 +53,22 @@ fun <T> Response<T>.asResult(
             else -> try {
                 errorConverter.convert(errorBody)
             } catch (ex: Exception) {
+                println("FlowAdapter : Exception while converting Error : ${ex.message}")
                 null
             }
         }
 
+        println("FlowAdapter: ErrorResponse : $errorString")
+        println("FlowAdapter: ErrorResponse Message : $errorMessage")
+
+        val message = errorString ?: errorMessage ?: "Unknown Error"
         if (error != null) {
             error.code = code()
             error.rawError = errorString
+            error.message = error.message ?: message
             Result.failure(error)
         } else {
-            Result.failure(Throwable(message = errorString ?: errorMessage ?: "Unknown Error"))
+            Result.failure(Throwable(message))
         }
     }
 }
